@@ -1,0 +1,41 @@
+version: '3.3'
+
+services:
+  #tag_web_ui:
+  #  container_name: tag_web_ui
+  #  restart: always
+  #  build:
+  #    context: ./tag-web-ui
+  #    dockerfile: Dockerfile
+  #  volumes:
+  #    - ./tag-web-ui/:/tag-web-ui
+  #  ports:
+  #    - 3000:3000
+  #  links:
+  #    - tag_server
+  #  networks:
+  #    - default
+
+  #  command: npm run start
+  #
+  app_server:
+    container_name: app_server
+    restart: always
+    build:
+      context: ./
+      dockerfile: backend/Dockerfile
+    volumes:
+      - ./backend:/app
+
+    ports:
+      - 5000:5000
+    networks:
+      - default
+
+    command:  uwsgi --http 0.0.0.0:5000 --master  --wsgi-file /app/app_server.py --ini /app/app_server.ini --http-to /tmp/app_server.sock
+    environment:
+        - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - PYTHONPATH=/app
+networks:
+  default:
+    external: false
