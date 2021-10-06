@@ -8,7 +8,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     volumes:
-      - ./frontend/:/web_ui
+      - ./frontend/src:/web_ui/src
+      - ./frontend/public:/web_ui/public
     ports:
       - 3000:3000
     links:
