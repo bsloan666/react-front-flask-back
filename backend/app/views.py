@@ -5,7 +5,6 @@
 import os
 import json
 import sys
-from .compose import generate_notes 
 from flask import Blueprint, render_template, request
 
 
@@ -21,16 +20,14 @@ def add2():
     Sum them and save the result  
     """
 
-    if request.method == 'POST':
+    data = request.json
+    lhs = float(data.get('lhs'))
+    rhs = float(data.get('rhs'))
+    result = lhs + rhs
+    print(request.__dict__)
 
-        if 'submit' in request.form:
-            lhs = float(request.form.get('lhs'))
-            rhs = float(request.form.get('rhs'))
-            result = lhs + rhs
-            print(request.__dict__)
-
-            return {'result':result}
-                  
+    return {'lhs':lhs, 'rhs':rhs, 'result':result}
+              
                  
                                    
 
