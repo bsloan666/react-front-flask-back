@@ -1,5 +1,5 @@
 {
-  "name": "tag-web-ui",
+  "name": "web_ui",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -26,8 +26,7 @@
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest"
+      "react-app"
     ]
   },
   "browserslist": {
@@ -42,5 +41,5 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://tag_server:5000"
+  "proxy": "http://app_server:5000"
 }

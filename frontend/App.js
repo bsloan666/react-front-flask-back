@@ -1,6 +1,5 @@
 import './App.css';
-import SingleYear from './SingleYear/SingleYear';
-import TenYear from './TenYear/TenYear';
+import Add2 from './Add2';
 
 import {
   BrowserRouter as Router,
@@ -16,13 +15,10 @@ const App = () => {
         <div className="App">
           <header className="App-header">
             <h1>
-              Taxes and Growth Model
+              Add Two Numbers 
             </h1>
             <Link to="/">
               <button type="button"> Single Year Run </button>
-            </Link>
-            <Link to="/tenyear">
-              <button type="button"> Ten Year Run </button>
             </Link>
           </header>
         </div>
@@ -30,13 +26,8 @@ const App = () => {
       </div>
       <Switch>
         <Route exact path="/">
-          <div className="single-year">
-            <SingleYear > </SingleYear>
-          </div>
-        </Route>
-        <Route path="/tenyear">
-          <div className="ten-year">
-            <TenYear className="ten-year"> </TenYear>
+          <div className="add-2">
+            <Add2> </Add2>
           </div>
         </Route>
       </Switch>
