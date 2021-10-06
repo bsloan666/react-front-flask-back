@@ -2,8 +2,10 @@
 """
     Standard Flask Application endpoints
 """
+import threading
 import os
 import json
+import subprocess
 import sys
 from flask import Blueprint, render_template, request
 
@@ -26,9 +28,12 @@ class SessionCache:
         """
         if not os.path.exists(os.path.dirname(self.fname)):
             os.makedirs(os.path.dirname(self.fname))
-        handle = open(self.fname, 'w')
-        handle.write(output)
-        handle.close()
+        if not os.path.exists(self.fname):
+            with open(self.fname, 'w') as handle:   
+                handle.write(output)
+        else:        
+            with open(self.fname, 'a') as handle:   
+                handle.write(output)
         return True
 
     def load_result(self):
@@ -36,10 +41,9 @@ class SessionCache:
         Loads content from a session cache 
         """
         if os.path.exists(self.fname):
-            handle = open(self.fname, 'r')
-            ouptut = handle.read()
-            handle.close()
-            return ouptut
+            with open(self.fname, 'r') as handle:
+                output = handle.read()
+                return output
         return ""
 
     def delete_result(self):
@@ -50,6 +54,32 @@ class SessionCache:
             os.remove(self.fname)
             return True
         return False
+
+
+def execute_with_updates(cmd):
+    """
+    Wrap Popen to grab output as it is appears.
+    from: https://stackoverflow.com/questions/4417546/constantly-print-subprocess-output-while-process-is-running  
+    """
+    popen = subprocess.Popen(cmd, stdout=subprocess.PIPE, universal_newlines=True)
+    for stdout_line in iter(popen.stdout.readline, ""):
+        yield stdout_line 
+    popen.stdout.close()
+    return_code = popen.wait()
+    if return_code:
+        raise subprocess.CalledProcessError(return_code, cmd)
+
+
+def command_processor(lhs, rhs, session_id):
+    """
+    Threaded worker that runs 
+    """
+    path_to_exe = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bin', 'slowadd.py')) 
+    cmd = ["python", path_to_exe, str(lhs), str(rhs)]
+    scache = SessionCache(session_id)
+    for line in execute_with_updates(cmd):
+        scache.save_result(line)
+    scache.delete_result()    
 
 
 @APP.route('/add2', methods=['GET', 'POST'])
@@ -63,15 +93,24 @@ def add2():
     lhs = float(data.get('lhs'))
     rhs = float(data.get('rhs'))
     session_id = data.get('session_id')
-    result = lhs + rhs
-    print(request.__dict__)
 
-    return {'lhs':lhs, 'rhs':rhs, 'result':result, 'session_id':session_id}
-              
-                 
-                                   
+    threading.Thread(target=command_processor,
+                     args=(lhs, rhs, session_id),
+                     daemon=True).start()
 
-    print("Entry Point!")
-    return {}
+    return {'lhs':lhs, 'rhs':rhs, 'session_id':session_id}
 
+
+@APP.route('/command_status', methods=['GET', 'POST'])
+def command_status():
+    """
+    Once the client has asked us to perform some expensive computation,
+    he can call this endpoint periodically (with the session_id) and get the latest
+    state of the output
+    """
+    data = request.json
+    session_id = data.get('session_id')
+    scache = SessionCache(session_id)
+    logging = scache.load_result()
+    return {"output":logging, "session_id":session_id} 
 

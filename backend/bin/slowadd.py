@@ -4,9 +4,7 @@
 Add two numbers as excruciatingly slowly as possible
 """
 import sys
-import time #sleep
 from excuses import EXCUSES 
-
 
 
 if __name__ == "__main__":
@@ -15,11 +13,10 @@ if __name__ == "__main__":
     evaldict['rhs'] = sys.argv[2]
     evaldict['result'] = float(evaldict['lhs']) + float(evaldict['rhs'])
 
-    # let's make sure this takes around 150 seconds
-
-    interval = 150/len(EXCUSES)
-
+    accum = 0
     for excuse in EXCUSES:
-        time.sleep(interval)
-        print(excuse.format(**evaldict))
+        for incr in range(100000):
+            accum += incr
+        # caution! the flush option is critical here!
+        print(excuse.format(**evaldict), flush=True)
 
