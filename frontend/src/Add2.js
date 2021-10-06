@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 const Add2 = () => {
     const [data, setData] = useState('')
@@ -12,6 +13,7 @@ const Add2 = () => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
+                'session_id': uuidv4(),
                 'lhs': document.getElementById('lhs').value,
                 'rhs': document.getElementById('rhs').value
             })
