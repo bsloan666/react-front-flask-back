@@ -8,9 +8,10 @@ ENV PYTHONPATH = "/app"
 
 RUN pip install pipenv
 
-COPY ./backend/Pipfile /app/Pipfile 
+COPY ./Pipfile /app/Pipfile 
 RUN pipenv lock --requirements > requirements.txt && \
     pip install -r requirements.txt
 
+RUN mkdir -p /pids
 
-CMD ["uwsgi", "--http", "0.0.0.0:5000", "--master", "--wsgi-file", "/app/wsgi.py", "--ini", "/app/app_server.ini", "/tmp/app_server.sock"]
+# CMD ["uwsgi", "--http", "0.0.0.0:5000", "--master", "--wsgi-file", "/app/wsgi.py", "--ini", "/app/app_server.ini", "--http-to", "/tmp/app_server.sock"]

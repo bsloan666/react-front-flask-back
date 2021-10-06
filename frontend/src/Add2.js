@@ -1,31 +1,28 @@
 import React, { useState } from 'react'
-import Switch from "react-switch";
-
 
 const Add2 = () => {
+    const [data, setData] = useState('')
     async function requestSum() {
-        const response = await new Promise(fetch("/tag/single_year", {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            mode: 'cors', // no-cors, *cors, same-origin
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'same-origin', // include, *same-origin, omit
+        const response = await fetch("/app/add2", {
+            method: 'POST', 
+            mode: 'cors',
+            cache: 'no-cache',
+            credentials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json'
-                // 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: JSON.stringify({
                 'lhs': document.getElementById('lhs').value,
                 'rhs': document.getElementById('rhs').value
             })
-        }))
+        })
             .then(response => response.json()
                 .then(data => {
                     console.log('This is the data: ', data)
-                    setData(data)
+                    setData(JSON.stringify(data))
                 })
             )
     }
-
     return (
         <div>
             <h2> Add 2 Numbers </h2>
@@ -34,7 +31,7 @@ const Add2 = () => {
                     type="number"
                     name="lhs"
                     id="lhs"
-                    maxlength='4'
+                    maxLength='4'
                     size='4'
                 />
                 +
@@ -42,7 +39,7 @@ const Add2 = () => {
                     type="number"
                     name="rhs"
                     id="rhs"
-                    maxlength='4'
+                    maxLength='4'
                     size='4'
                 />
             </div>

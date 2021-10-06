@@ -5,8 +5,8 @@ services:
     container_name: web_ui
     restart: always
     build:
-      context: ./web_ui
-      dockerfile: frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
     volumes:
       - ./frontend/:/web_ui
     ports:
@@ -22,8 +22,8 @@ services:
     container_name: app_server
     restart: always
     build:
-      context: ./
-      dockerfile: backend/Dockerfile
+      context: ./backend
+      dockerfile: Dockerfile
     volumes:
       - ./backend:/app
 
@@ -32,7 +32,7 @@ services:
     networks:
       - default
 
-    command:  uwsgi --http 0.0.0.0:5000 --master  --wsgi-file /app/app_server.py --ini /app/app_server.ini --http-to /tmp/app_server.sock
+    command:  uwsgi --http 0.0.0.0:5000 --master  --wsgi-file /app/app_server.py --ini /app/app_server.ini --http-to /pids/app_server.sock
     environment:
         - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         - PYTHONPATH=/app

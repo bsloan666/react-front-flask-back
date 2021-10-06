@@ -17,9 +17,6 @@ const App = () => {
             <h1>
               Add Two Numbers 
             </h1>
-            <Link to="/">
-              <button type="button"> Single Year Run </button>
-            </Link>
           </header>
         </div>
         <br />
