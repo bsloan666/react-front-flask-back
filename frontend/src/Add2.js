@@ -1,9 +1,16 @@
 import React, { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
+import io from 'socket.io-client'
+
+
+let endPoint = "http://localhost:5000/";
+let socket = io(`${endPoint}`,  { transports : ['websocket'] });
+
 
 const Add2 = () => {
     const [data, setData] = useState('')
     async function requestSum() {
+        // DEBUG
         const response = await fetch("/app/add2", {
             method: 'POST', 
             mode: 'cors',
@@ -19,39 +26,23 @@ const Add2 = () => {
             })
         })
             .then(response => response.json()
-                .then(data => {
-                    document.getElementById('session_id').value = data['session_id']
-                    var intervalId = window.setInterval(function(){
-                        requestUpdate();
-                    }, 5000);
-                    document.getElementById('interval_id').value = intervalId
+                .then(result => {
+                    document.getElementById('session_id').value = result['session_id']
                 })
             )
     }
-    async function requestUpdate() {
-        const response = await fetch("/app/command_status", {
-            method: 'POST', 
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                'session_id': document.getElementById('session_id').value,
-            })
-        })
-            .then(response => response.json()
-                .then(data => {
-                    if( data['output'] === ''){
-                        // window.clearInterval(document.getElementById('interval_id').value)
-                    }
-                    else {
-                        setData(data['output'])
-                    }
-                })
-            )
-    }
+
+    socket.on("message", msg => {
+        setData(data + msg +'\n');
+    });
+
+    const doWebSock = () => {
+      const  session_id= uuidv4()
+      const lhs= document.getElementById('lhs').value
+      const rhs= document.getElementById('rhs').value
+      socket.emit("message", JSON.stringify({"lhs":lhs, "rhs":rhs, "session_id":session_id}));
+    };
+
     return (
         <div>
             <h2> Add 2 Numbers </h2>
@@ -84,6 +75,7 @@ const Add2 = () => {
             </div>
             <br />
             < button onClick={requestSum}> Request Sum </button>
+            < button onClick={doWebSock}> Web Socket </button>
             <div className='dataOutput'>
                 <pre > {data} </pre>
             </div>
