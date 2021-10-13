@@ -15,7 +15,7 @@ if __name__ == "__main__":
 
     accum = 0
     for excuse in EXCUSES:
-        for incr in range(100000):
+        for incr in range(1000000):
             accum += incr
         # caution! the flush option is critical here!
         print(excuse.format(**evaldict), flush=True)

@@ -2,15 +2,16 @@ import React, { useState } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import io from 'socket.io-client'
 
-
 let endPoint = "http://localhost:5000/";
-let socket = io(`${endPoint}`,  { transports : ['websocket'] });
+let socket = io.connect(`${endPoint}`);
+var session_id = uuidv4();
+socket.emit("message", JSON.stringify({"session_id":session_id}));
 
 
 const Add2 = () => {
     const [data, setData] = useState('')
+
     async function requestSum() {
-        // DEBUG
         const response = await fetch("/app/add2", {
             method: 'POST', 
             mode: 'cors',
@@ -20,7 +21,7 @@ const Add2 = () => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                'session_id': uuidv4(),
+                'session_id': session_id,
                 'lhs': document.getElementById('lhs').value,
                 'rhs': document.getElementById('rhs').value
             })
@@ -31,18 +32,14 @@ const Add2 = () => {
                 })
             )
     }
-
     socket.on("message", msg => {
-        setData(data + msg +'\n');
+        setData(data + msg + '\n');
     });
 
-    const doWebSock = () => {
-      const  session_id= uuidv4()
-      const lhs= document.getElementById('lhs').value
-      const rhs= document.getElementById('rhs').value
-      socket.emit("message", JSON.stringify({"lhs":lhs, "rhs":rhs, "session_id":session_id}));
-    };
-
+    socket.on("disconnect", msg => {
+        socket.disconnect(`${endPoint}`);
+        setData(data + 'Done\n');
+    });
     return (
         <div>
             <h2> Add 2 Numbers </h2>
@@ -75,7 +72,6 @@ const Add2 = () => {
             </div>
             <br />
             < button onClick={requestSum}> Request Sum </button>
-            < button onClick={doWebSock}> Web Socket </button>
             <div className='dataOutput'>
                 <pre > {data} </pre>
             </div>
