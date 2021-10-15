@@ -1,10 +1,31 @@
-from wsgi import application
+from flask import Flask, request
 from flask_socketio import SocketIO
-from app import views
+from app.views import APP
+import json
 
-views.sock = SocketIO(application, cors_allowed_origins="*")
+def create_app():
+    app = Flask(__name__)
+    app.sock = SocketIO(app, cors_allowed_origins="*")
+    app.SESSION_TO_SID = {}
+    app.app_context().push()
 
-views.socket_funcs()
+    @app.sock.on("message")
+    def register_sid(msg):
+        data = json.loads(msg)
+        app.SESSION_TO_SID[data['session_id']] = request.sid
+        print("SESSION_MAP", app.SESSION_TO_SID)
 
-if __name__ == "__main__":
-    views.sock.run(application)
+    @app.sock.on("connect")
+    def announce_connection():
+        print("CONNECTED", request.sid)
+
+    @app.sock.on("disconnect")
+    def announce_connection():
+        print("DISCONNECTED", request.sid)
+
+    @app.route('/', methods=['GET', 'POST'])
+    def index():
+        return 'App Server'
+
+    app.register_blueprint(APP, url_prefix='/app')
+    return app

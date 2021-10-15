@@ -4,6 +4,7 @@
 Add two numbers as excruciatingly slowly as possible
 """
 import sys
+import time
 from excuses import EXCUSES 
 
 
@@ -15,8 +16,7 @@ if __name__ == "__main__":
 
     accum = 0
     for excuse in EXCUSES:
-        for incr in range(1000000):
-            accum += incr
+        time.sleep(1)
         # caution! the flush option is critical here!
         print(excuse.format(**evaldict), flush=True)
 

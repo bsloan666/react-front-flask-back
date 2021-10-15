@@ -31,4 +31,24 @@ What I'm really intending to show is a solution to the problem of what to do whe
 It seems that browsers are unahappy waiting more than a minute or two for a response from a server. What I would like to demonstrate
 is a way for the server to save the partial fruits of its computation in some kind of labelled cache so that when the frontend client
 asks for a progress report (passing a session ID token it was given as a result of the initial call), the server can dump whatever it 
-has in its labelled cache back to the client.  
+has in its labelled cache back to the client.
+
+Running outside of Docker
+-------------------------
+To run the server, use:
+```
+cd backend
+pipenv run gunicorn --worker-class eventlet -w 1  -b localhost:5000 'app_server:create_app()'
+```
+
+In a separate shell, start the client:
+```
+cd frontend
+npm start
+```
+
+Very Finicky Dependencies
+-------------------------
+The Gunicorn and Eventlet version dependencies are strict: don't attempt to use versions other than the ones in Pipfile. 
+
+

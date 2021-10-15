@@ -1,12 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import io from 'socket.io-client'
 
+// DEBUG (should refer to app_server host)
 let endPoint = "http://localhost:5000/";
+
+console.log("connecting...")
 let socket = io.connect(`${endPoint}`);
 var session_id = uuidv4();
-socket.emit("message", JSON.stringify({"session_id":session_id}));
 
+console.log("sending session ID...")
+socket.emit("message", JSON.stringify({"session_id":session_id}));
 
 const Add2 = () => {
     const [data, setData] = useState('')
@@ -16,7 +20,7 @@ const Add2 = () => {
             method: 'POST', 
             mode: 'cors',
             cache: 'no-cache',
-            credentials: 'same-origin',
+            credntials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -32,8 +36,8 @@ const Add2 = () => {
                 })
             )
     }
-    socket.on("message", msg => {
-        setData(data + msg + '\n');
+    socket.on("message", function(msg) {
+       setData(data + msg);
     });
 
     socket.on("disconnect", msg => {
@@ -64,21 +68,12 @@ const Add2 = () => {
                     name="session_id"
                     id="session_id"
                 />
-                <input
-                    type="hidden"
-                    name="interval_id"
-                    id="interval_id"
-                />
             </div>
             <br />
             < button onClick={requestSum}> Request Sum </button>
             <div className='dataOutput'>
                 <pre > {data} </pre>
             </div>
-
-            {/* < pre >
-                {JSON.stringify(inputList, null, 2)}
-            </pre> */}
         </div >
     )
 }
