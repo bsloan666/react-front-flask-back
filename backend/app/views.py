@@ -29,20 +29,18 @@ def execute_with_updates(cmd):
         raise subprocess.CalledProcessError(return_code, cmd)
 
 def run(lhs, rhs, session_id):
+    print("RUNNING PROGRAM")
     path_to_exe = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bin', 'slowadd.py'))
     cmd = ["python", path_to_exe, str(lhs), str(rhs)]
     for line in execute_with_updates(cmd):
         print(line.rstrip())
         try:
-            app.sock.send(line, sid=app.SESSION_TO_SID[session_id])
-            app.sock.sleep(1)
+            app.sock.send(line.rstrip(), sid=app.SESSION_TO_SID[session_id])
         except IOError as err:
             print(str(err))
-            app.sock.sleep(0)
         except OSError as err:
             print(str(err))
-            app.sock.sleep(0)
-
+    del app.SESSION_TO_SID[session_id]
 
 @APP.route('/add2', methods=['GET', 'POST'])
 def add2():
