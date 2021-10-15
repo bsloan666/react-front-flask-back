@@ -28,20 +28,7 @@ def execute_with_updates(cmd):
     if return_code:
         raise subprocess.CalledProcessError(return_code, cmd)
 
-@APP.route('/add2', methods=['GET', 'POST'])
-def add2():
-    """
-    The request will have Left Hand Side and Right Hand Side arguments.
-    Sum them and save the result  
-    """
-    print("VISITOR:", request.remote_addr)
-    data = request.json
-
-
-    lhs = float(data.get('lhs'))
-    rhs = float(data.get('rhs'))
-    session_id = data.get('session_id')
-
+def run(lhs, rhs, session_id):
     path_to_exe = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'bin', 'slowadd.py'))
     cmd = ["python", path_to_exe, str(lhs), str(rhs)]
     for line in execute_with_updates(cmd):
@@ -55,5 +42,19 @@ def add2():
         except OSError as err:
             print(str(err))
             app.sock.sleep(0)
+
+
+@APP.route('/add2', methods=['GET', 'POST'])
+def add2():
+    """
+    The request will have Left Hand Side and Right Hand Side arguments.
+    Sum them and save the result  
+    """
+    print("VISITOR:", request.remote_addr)
+    data = request.json
+
+    lhs = float(data.get('lhs'))
+    rhs = float(data.get('rhs'))
+    session_id = data.get('session_id')
 
     return {'lhs':lhs, 'rhs':rhs, 'session_id':session_id}

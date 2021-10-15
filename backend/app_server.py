@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_socketio import SocketIO
-from app.views import APP
+from app.views import APP, run
 import json
 
 def create_app():
@@ -14,6 +14,7 @@ def create_app():
         data = json.loads(msg)
         app.SESSION_TO_SID[data['session_id']] = request.sid
         print("SESSION_MAP", app.SESSION_TO_SID)
+        run(data['lhs'], data['rhs'], data['session_id'])
 
     @app.sock.on("connect")
     def announce_connection():

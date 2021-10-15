@@ -10,7 +10,6 @@ let socket = io.connect(`${endPoint}`);
 var session_id = uuidv4();
 
 console.log("sending session ID...")
-socket.emit("message", JSON.stringify({"session_id":session_id}));
 
 const Add2 = () => {
     const [data, setData] = useState('')
@@ -33,6 +32,7 @@ const Add2 = () => {
             .then(response => response.json()
                 .then(result => {
                     document.getElementById('session_id').value = result['session_id']
+                    socket.emit("message", JSON.stringify({"session_id":session_id, "lhs":result['lhs'], "rhs":result['rhs']}));
                 })
             )
     }
