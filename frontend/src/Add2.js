@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid'
 import io from 'socket.io-client'
 
 // DEBUG (should refer to app_server host)
-let endPoint = "http://localhost:5000/";
+let endPoint = "http://app_servver:5000/";
 
 console.log("connecting...")
 let socket = io.connect(`${endPoint}`);
 var session_id = uuidv4();
 
-console.log("sending session ID...")
 
 const Add2 = () => {
     const [data, setData] = useState('')
@@ -31,18 +30,24 @@ const Add2 = () => {
         })
             .then(response => response.json()
                 .then(result => {
+                    console.log("sending session ID...")
                     document.getElementById('session_id').value = result['session_id']
                     socket.emit("message", JSON.stringify({"session_id":session_id, "lhs":result['lhs'], "rhs":result['rhs']}));
                 })
             )
     }
-    socket.on("message", function(msg) {
-       setData(data + msg);
-    });
+    useEffect(() => {
+        getMessages();
+    }, [data.length]);
 
-    socket.on("disconnect", msg => {
+    const getMessages = () => {
+        socket.on("message", function(msg) {
+           document.getElementById('output_data').innerHTML += msg+'\n';
+        });
+    };
+
+    socket.on("disconnect", function() {
         socket.disconnect(`${endPoint}`);
-        setData(data + 'Done\n');
     });
     return (
         <div>
@@ -71,9 +76,8 @@ const Add2 = () => {
             </div>
             <br />
             < button onClick={requestSum}> Request Sum </button>
-            <div className='dataOutput'>
-                <pre > {data} </pre>
-            </div>
+            <br />
+            <pre id="output_data">{data}</pre>
         </div >
     )
 }
