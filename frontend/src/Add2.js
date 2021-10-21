@@ -3,7 +3,8 @@ import { v4 as uuidv4 } from 'uuid'
 import io from 'socket.io-client'
 
 // DEBUG (should refer to app_server host)
-let endPoint = "http://app_servver:5000/";
+// let endPoint = "http://app_server:5000/";
+let endPoint = "/";
 
 console.log("connecting...")
 let socket = io.connect(`${endPoint}`);

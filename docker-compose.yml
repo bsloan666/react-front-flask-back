@@ -33,7 +33,7 @@ services:
     networks:
       - default
 
-    command:  pipenv run gunicorn --worker-class eventlet -w 1  -b localhost:5000 'app_server:create_app()' 
+    command:  pipenv run gunicorn --worker-class eventlet -w 1  -b app_server:5000 'app_server:create_app()' 
     environment:
         - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         - PYTHONPATH=/app
