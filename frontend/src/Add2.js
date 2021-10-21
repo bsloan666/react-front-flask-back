@@ -1,21 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid'
 import io from 'socket.io-client'
 
-// DEBUG (should refer to app_server host)
-// let endPoint = "http://app_server:5000/";
 let endPoint = "/";
 
 console.log("connecting...")
 let socket = io.connect(`${endPoint}`);
 var session_id = uuidv4();
 
-
 const Add2 = () => {
-    const [data, setData] = useState('')
-
     async function requestSum() {
-        const response = await fetch("/app/add2", {
+        await fetch("/app/add2", {
             method: 'POST', 
             mode: 'cors',
             cache: 'no-cache',
@@ -39,7 +34,7 @@ const Add2 = () => {
     }
     useEffect(() => {
         getMessages();
-    }, [data.length]);
+    });
 
     const getMessages = () => {
         socket.on("message", function(msg) {
@@ -78,7 +73,7 @@ const Add2 = () => {
             <br />
             < button onClick={requestSum}> Request Sum </button>
             <br />
-            <pre id="output_data">{data}</pre>
+            <pre id="output_data"></pre>
         </div >
     )
 }
