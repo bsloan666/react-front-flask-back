@@ -1,57 +1,50 @@
-import React, { useState } from 'react'
+import React, { useEffect } from "react";
 import { v4 as uuidv4 } from 'uuid'
+import io from 'socket.io-client'
+
+let endPoint = "/";
+
+console.log("connecting...")
+let socket = io.connect(`${endPoint}`);
+var session_id = uuidv4();
 
 const Add2 = () => {
-    const [data, setData] = useState('')
     async function requestSum() {
-        const response = await fetch("/app/add2", {
+        await fetch("/app/add2", {
             method: 'POST', 
             mode: 'cors',
             cache: 'no-cache',
-            credentials: 'same-origin',
+            credntials: 'same-origin',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                'session_id': uuidv4(),
+                'session_id': session_id,
                 'lhs': document.getElementById('lhs').value,
                 'rhs': document.getElementById('rhs').value
             })
         })
             .then(response => response.json()
-                .then(data => {
-                    document.getElementById('session_id').value = data['session_id']
-                    var intervalId = window.setInterval(function(){
-                        requestUpdate();
-                    }, 5000);
-                    document.getElementById('interval_id').value = intervalId
+                .then(result => {
+                    console.log("sending session ID...")
+                    document.getElementById('session_id').value = result['session_id']
+                    socket.emit("message", JSON.stringify({"session_id":session_id, "lhs":result['lhs'], "rhs":result['rhs']}));
                 })
             )
     }
-    async function requestUpdate() {
-        const response = await fetch("/app/command_status", {
-            method: 'POST', 
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                'session_id': document.getElementById('session_id').value,
-            })
-        })
-            .then(response => response.json()
-                .then(data => {
-                    if( data['output'] === ''){
-                        // window.clearInterval(document.getElementById('interval_id').value)
-                    }
-                    else {
-                        setData(data['output'])
-                    }
-                })
-            )
-    }
+    useEffect(() => {
+        getMessages();
+    });
+
+    const getMessages = () => {
+        socket.on("message", function(msg) {
+           document.getElementById('output_data').innerHTML += msg+'\n';
+        });
+    };
+
+    socket.on("disconnect", function() {
+        socket.disconnect(`${endPoint}`);
+    });
     return (
         <div>
             <h2> Add 2 Numbers </h2>
@@ -76,21 +69,11 @@ const Add2 = () => {
                     name="session_id"
                     id="session_id"
                 />
-                <input
-                    type="hidden"
-                    name="interval_id"
-                    id="interval_id"
-                />
             </div>
             <br />
             < button onClick={requestSum}> Request Sum </button>
-            <div className='dataOutput'>
-                <pre > {data} </pre>
-            </div>
-
-            {/* < pre >
-                {JSON.stringify(inputList, null, 2)}
-            </pre> */}
+            <br />
+            <pre id="output_data"></pre>
         </div >
     )
 }
