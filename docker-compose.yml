@@ -1,6 +1,36 @@
 version: '3.3'
 
 services:
+  # nginx
+  nginx:
+    image: "nginx:1.1.1"
+    user: "${NGINX_UID-1000}:${NGINX_GID-1000}"
+    ports:
+      - 80:80
+      - 443:443
+    read_only: true
+    volumes:
+      # The site configuration. Anything in `sites-enabled` is automatically `include`d
+      - ./nginx/nginx.conf:/etc/nginx/sites-enabled/app.conf:ro
+      - ./nginx/uwsgi_params:/etc/nginx/sites-enabled/uwsgi_params:ro
+      # The following paths need to be mounted `rw` b/c the container itself is `read_only`
+      - ./nginx/var/run/nginx:/var/run/nginx:rw
+      - ./nginx/var/cache/nginx:/var/cache/nginx:rw
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - ./nginx/uwsgi_params:/etc/nginx/uwsgi_params
+      - ./frontend:/app
+      - /etc/nginx/ssl:/etc/ssl
+      - /etc/localtime:/etc/localtime
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+        - external
+    depends_on:
+        - web_ui
+        - app_server
+
   web_ui:
     container_name: web_ui
     restart: always
@@ -15,7 +45,7 @@ services:
     links:
       - app_server
     networks:
-      - default
+      - external
 
     command: npm run start
   
@@ -31,12 +61,17 @@ services:
     ports:
       - 5000:5000
     networks:
-      - default
+      - external
 
     command:  pipenv run gunicorn --worker-class eventlet -w 1  -b app_server:5000 'app_server:create_app()' 
     environment:
         - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
         - PYTHONPATH=/app
 networks:
-  default:
-    external: false
+    external:
+        driver: bridge
+        ipam:
+          driver: default
+          config:
+              - subnet:  174.24.0.1/16
+
