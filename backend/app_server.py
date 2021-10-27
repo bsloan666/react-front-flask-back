@@ -1,5 +1,5 @@
 from flask import Flask, request
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room
 from app.views import APP, run
 import json
 
@@ -14,6 +14,7 @@ def create_app():
         data = json.loads(msg)
         app.SESSION_TO_SID[data['session_id']] = request.sid
         print("SESSION_MAP", app.SESSION_TO_SID)
+        join_room(data['session_id'])
         run(data['lhs'], data['rhs'], data['session_id'])
 
     @app.sock.on("connect")

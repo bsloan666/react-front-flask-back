@@ -45,6 +45,7 @@ const Add2 = () => {
     socket.on("disconnect", function() {
         socket.disconnect(`${endPoint}`);
     });
+
     return (
         <div>
             <h2> Add 2 Numbers </h2>

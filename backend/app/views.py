@@ -38,7 +38,7 @@ def run(lhs, rhs, session_id):
     for line in execute_with_updates(cmd):
         print(line.rstrip())
         try:
-            app.sock.send(line.rstrip(), sid=app.SESSION_TO_SID[session_id])
+            app.sock.send(line.rstrip(), to=session_id)
         except IOError as err:
             print(str(err))
         except OSError as err:
