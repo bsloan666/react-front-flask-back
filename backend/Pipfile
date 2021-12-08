@@ -6,6 +6,7 @@ verify_ssl = true
 [packages]
 flask = "*"
 flask_socketio = "*"
+flask_login = "*"
 openpyxl = "*"
 pandas = "*"
 xlrd = "*"
