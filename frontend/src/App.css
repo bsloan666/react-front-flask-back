@@ -1,8 +1,16 @@
 body {
     font: .9rem 'Fira Sans', sans-serif;
+
 }
 .App {
   text-align: center;
+}
+
+.app_content {
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 100px;
 }
 
 label {

@@ -1,7 +1,7 @@
 import './App.css';
 import Add2 from './Add2';
 import Login from './Login';
-import CreateUser from './CreateUser';
+import CreateAccount from './CreateAccount';
 
 import {
   BrowserRouter as Router,
@@ -24,18 +24,18 @@ const App = () => {
       </div>
       <Switch>
         <Route exact path="/">
-          <div className="add-2">
+          <div className="app_content">
             <Add2> </Add2>
           </div>
         </Route>
         <Route exact path="/login">
-          <div className="login">
+          <div className="app_content">
             <Login> </Login>
           </div>
         </Route>
-        <Route exact path="/create_user">
-          <div className="createuser">
-            <CreateUser> </CreateUser>
+        <Route exact path="/create_account">
+          <div className="app_content">
+            <CreateAccount> </CreateAccount>
           </div>
         </Route>
       </Switch>

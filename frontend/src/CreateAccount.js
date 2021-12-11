@@ -1,12 +1,9 @@
-import { useHistory } from "react-router-dom";
 
-const Login = () => {
+const CreateAccount = () => {
 
-    const history = useHistory();
-    const navigateTo = () => history.push('/create_account');
     return (
         <div>
-            <h2> Login </h2>
+            <h2> Create Account </h2>
             <div>
                 <label>Username:</label>
                 <input type="text" id="username" name="username"/>
@@ -17,10 +14,14 @@ const Login = () => {
                 <input type="password" id="pass" name="password" minLength="8" required/>
             </div>
 
-            <input type="submit" value="Sign in"/><br/><br/>
-            Don't have an account?&nbsp;<button onClick={navigateTo} >Create Account</button>
+            <div>
+                <label>Verify Password:</label>
+                <input type="password" id="pass_verify" name="password_verify" minLength="8" required/>
+            </div>
+
+            <input type="submit" value="Create New User"/>
         </div >
     )
 }
 
-export default Login 
+export default CreateAccount 

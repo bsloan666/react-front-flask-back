@@ -74,7 +74,7 @@ def run(lhs, rhs, session_id):
     del app.SESSION_TO_SID[session_id]
 
 @APP.route('/add2', methods=['GET', 'POST'])
-@login_required
+#@login_required
 def add2():
     """
     The request will have Left Hand Side and Right Hand Side arguments.
