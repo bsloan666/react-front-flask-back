@@ -1,5 +1,6 @@
 from flask import Flask, request
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, join_room
+from flask_login import LoginManager
 from app.views import APP, run
 import json
 
@@ -9,11 +10,14 @@ def create_app():
     app.SESSION_TO_SID = {}
     app.app_context().push()
 
+
+
     @app.sock.on("message")
     def register_sid(msg):
         data = json.loads(msg)
         app.SESSION_TO_SID[data['session_id']] = request.sid
         print("SESSION_MAP", app.SESSION_TO_SID)
+        join_room(data['session_id'])
         run(data['lhs'], data['rhs'], data['session_id'])
 
     @app.sock.on("connect")
@@ -27,6 +31,9 @@ def create_app():
     @app.route('/', methods=['GET', 'POST'])
     def index():
         return 'App Server'
+
+    app.login_manager = LoginManager()
+    app.login_manager.init_app(app)
 
     app.register_blueprint(APP, url_prefix='/app')
     return app

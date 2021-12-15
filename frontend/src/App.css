@@ -1,16 +1,24 @@
+body {
+    font: .9rem 'Fira Sans', sans-serif;
+
+}
 .App {
   text-align: center;
 }
 
-
-.single-year {
-  text-align: center;
+.app_content {
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 100px;
 }
 
-.ten-year {
-  text-align:center;
+label {
+    display: block;
 }
 
-.top-level-box {
-  border: 1px solid grey;
+input[type='submit'],
+label {
+    margin-top: 1rem;
 }
+
